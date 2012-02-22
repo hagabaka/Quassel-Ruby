@@ -1,0 +1,13 @@
+#!/usr/bin/env ruby
+
+abort 'quassel-ruby <username> <password>' unless ARGV.length >= 2
+
+require 'Qt'
+require 'client'
+
+Qt::Application.new(ARGV) do
+  username, password = ARGV[0..1]
+  Quassel::Client.new(username, password)
+  exec
+end
+
