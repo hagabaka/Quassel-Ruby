@@ -1,0 +1,3 @@
+[submodule "quassel"]
+	path = quassel
+	url = git://git.quassel-irc.org/quassel.git
