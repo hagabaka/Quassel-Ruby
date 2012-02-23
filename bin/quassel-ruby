@@ -15,7 +15,7 @@ end.parse!
 abort 'quassel-ruby [options] <username> <password>' unless ARGV.length >= 2
 
 require 'Qt'
-require 'client'
+require 'quassel/client'
 
 Qt::Application.new(ARGV) do
   username, password = ARGV[0..1]

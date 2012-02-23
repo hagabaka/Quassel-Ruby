@@ -1,4 +1,4 @@
-require 'connection'
+require 'quassel/connection'
 
 module Quassel
   class Client
