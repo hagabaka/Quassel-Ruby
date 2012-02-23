@@ -1,0 +1,4 @@
+ext/*.o
+ext/moc_*.cpp
+ext/mkmf.log
+ext/Makefile
