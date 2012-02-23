@@ -1,3 +1,6 @@
+
+require 'Qt'
+
 module Quassel
   # serialize data using Qt
   def qt_serialize(data)
