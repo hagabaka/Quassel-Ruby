@@ -3,9 +3,11 @@ require './ext/QuasselTypes'
 module Quassel
   # Connection to Quassel core
   class Connection
-    def initialize(host = '127.0.0.1', port = 4242)
-      @host = host
-      @port = port
+    DEFAULT_HOST = '127.0.0.1'
+    DEFAULT_PORT = 4242
+    def initialize(host = nil, port = nil)
+      @host = host ? host : DEFAULT_HOST
+      @port = port ? port : DEFAULT_PORT
       @socket = Qt::TcpSocket.new
       @expected_length = nil
     end

@@ -1,13 +1,25 @@
 #!/usr/bin/env ruby
 
-abort 'quassel-ruby <username> <password>' unless ARGV.length >= 2
+require 'optparse'
+
+options = {}
+opts = OptionParser.new do |opts|
+  opts.on("-H HOST","specify alternate host") {|o|
+    options[:host] = o
+  }
+  opts.on("-p PORT","specify alternate port") {|o|
+    options[:port] = o
+  }
+end.parse!
+
+abort 'quassel-ruby [options] <username> <password>' unless ARGV.length >= 2
 
 require 'Qt'
 require 'client'
 
 Qt::Application.new(ARGV) do
   username, password = ARGV[0..1]
-  Quassel::Client.new(username, password)
+  Quassel::Client.new(username, password, options[:host], options[:port])
   exec
 end
 
