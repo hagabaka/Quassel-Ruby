@@ -1,4 +1,4 @@
-#! /home/vbatts/.rvm/rubies/ruby-1.9.3-p0/bin/ruby
+#! /usr/bin/env ruby
 
 require 'optparse'
 
