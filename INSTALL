@@ -1,0 +1,6 @@
+
+$> ruby setup.rb clean
+$> ruby setup.rb config --prefix=`pwd`/derp
+$> ruby setup.rb setup
+$> ruby setup.rb install
+

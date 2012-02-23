@@ -1,9 +1,9 @@
-require 'connection'
+require 'quassel/connection'
 
 module Quassel
   class Client
-    def initialize(username, password)
-      connection = Connection.new
+    def initialize(username, password, host = nil, port = nil)
+      connection = Connection.new(host, port)
 
       connection.when_connected do
         connection.transmit \
