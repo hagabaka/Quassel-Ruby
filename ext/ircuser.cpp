@@ -1,0 +1,1 @@
+../quassel/src/common/ircuser.cpp

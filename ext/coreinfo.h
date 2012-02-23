@@ -1,0 +1,1 @@
+../quassel/src/common/coreinfo.h

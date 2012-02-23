@@ -1,0 +1,1 @@
+../quassel/src/common/util.h

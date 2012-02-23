@@ -1,3 +1,5 @@
+require './ext/QuasselTypes'
+
 module Quassel
   # Connection to Quassel core
   class Connection
