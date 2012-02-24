@@ -1,7 +1,7 @@
 require 'mkmf'
 
-$CPPFLAGS += '-I/usr/include/QtCore '
-$CPPFLAGS += '-I/usr/include/QtNetwork '
+$CPPFLAGS += ' -I/usr/include/QtCore'
+$CPPFLAGS += ' -I/usr/include/QtNetwork'
 
 have_library 'QtCore', nil
 have_library 'QtNetwork', nil
