@@ -11,6 +11,17 @@ module Quassel
       block
     end
 
+    # print Qt object using QDebug. p() for Qt objects
+    def qt_debug(object)
+      buffer = Qt::Buffer.new
+      buffer.open Qt::Buffer::WriteOnly
+      debug = Qt::Debug.new(buffer)
+      debug << object
+      buffer.close
+      buffer.open Qt::Buffer::ReadOnly
+      puts buffer.data.to_s
+    end
+
     # recursively convert a Qt::Variant (possibly container) to ruby value
     def ruby_value(object)
       case object
