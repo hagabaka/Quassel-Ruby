@@ -1,4 +1,5 @@
 require 'QuasselTypes'
+require 'quassel/helpers'
 
 module Quassel
   # Connection to Quassel core
@@ -18,8 +19,8 @@ module Quassel
         result.merge({key.to_s => value})
       end
 
-      block = Helper.qt_serialize(Qt::Variant.new(map))
-      length = Helper.qt_serialize(block.length)
+      block = Quassel.qt_serialize(Qt::Variant.new(map))
+      length = Quassel.qt_serialize(block.length)
       @socket.write length
       @socket.write block
     end
@@ -67,34 +68,6 @@ module Quassel
         data = "\0" * length
         @socket.read_data(data, length)
         yield data
-      end
-    end
-
-    module Helper
-      class << self
-        # serialize data using Qt
-        def qt_serialize(data)
-          block = Qt::ByteArray.new
-          writer = Qt::DataStream.new(block, Qt::IODevice::WriteOnly)
-          writer << data
-          block
-        end
-
-        # deeply convert a Qt::Variant (possibly container) to ruby value
-        def ruby_value(object)
-          case object
-          when Qt::Variant
-            ruby_value(object.value)
-          when Hash
-            result = {}
-            object.each_pair {|key, value| result[ruby_value(key)] = ruby_value(value)}
-            result
-          when Array
-            object.map {|item| ruby_value(item)} 
-          else
-            object
-          end
-        end
       end
     end
   end
