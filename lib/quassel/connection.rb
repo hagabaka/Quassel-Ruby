@@ -41,10 +41,12 @@ module Quassel
             reader = Qt::DataStream.new(Qt::ByteArray.new(data))
             reader >> variant
             Quassel.qt_debug variant
-            #message = QuasselTypes.unserialize(data)
-            #message = Helper.ruby_value(variant)
+
+            # FIXME currently causes segfault if variant contains Quassel-defined types
+            message = Quassel.ruby_value(variant)
+
             @expected_length = nil
-            block.call(variant)
+            block.call(message)
           end 
         else
           # need a length
