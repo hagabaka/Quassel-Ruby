@@ -26,7 +26,12 @@ module Quassel
     def ruby_value(object)
       case object
       when Qt::Variant
-        ruby_value(object.value)
+        if %w[BufferInfo NetworkId Identity Message].include? object.type_name
+          # FIXME extract information from the object by unserializing manually
+          object
+        else
+          ruby_value(object.value)
+        end
       when Hash
         result = {}
         object.each_pair {|key, value| result[ruby_value(key)] = ruby_value(value)}

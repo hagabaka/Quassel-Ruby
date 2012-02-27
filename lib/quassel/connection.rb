@@ -42,7 +42,6 @@ module Quassel
             reader >> variant
             Quassel.qt_debug variant
 
-            # FIXME currently causes segfault if variant contains Quassel-defined types
             message = Quassel.ruby_value(variant)
 
             @expected_length = nil
