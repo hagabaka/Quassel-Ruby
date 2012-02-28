@@ -30,6 +30,8 @@ module Quassel
       @socket.connect SIGNAL(:connected), &block
     end
 
+    REQUEST_TYPES = [nil, :sync, :rpc_call, :init_request, :init_data, :heart_beat,
+                     :heart_beat_reply]
     # yield message to given block when a message is received
     def when_message_received(&block)
       @socket.connect SIGNAL(:readyRead) do
@@ -39,7 +41,9 @@ module Quassel
           receive_data(@expected_length) do |data|
             variant = Quassel.unserialize_variant(data)
             message = Quassel.ruby_value(variant)
-
+            if message.is_a? Array
+              message[0] = REQUEST_TYPES[message[0]]
+            end
             @expected_length = nil
             block.call(message)
           end 
