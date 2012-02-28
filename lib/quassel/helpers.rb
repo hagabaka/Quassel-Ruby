@@ -28,12 +28,11 @@ module Quassel
       case object
       when Qt::Variant
         type_name = object.type_name
-        if %w[BufferInfo Message Identity
-              NetworkId BufferId MsgId IdentityId Network::Server].include? type_name
-          if Serialization.const_defined? type_name
-            data = qt_serialize(object).data
-            Serialization::Variant.read data
-          else
+        if %w[BufferInfo Message Identity Network::Server
+              NetworkId BufferId MsgId IdentityId].include? type_name
+          begin
+            Serialization::Variant.read qt_serialize(object).data
+          rescue IndexError
             object
           end
         else

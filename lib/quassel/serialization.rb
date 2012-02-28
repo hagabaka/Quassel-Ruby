@@ -1,4 +1,5 @@
 require 'bindata'
+require 'caseconverter'
 
 module Quassel
   module Serialization
@@ -78,11 +79,16 @@ module Quassel
     end
 
     class Variant < BinData::Primitive
+      endian :big
       skip length: 5
       byte_array :type_name
       choice :object, selection: proc {type_name.chomp("\x00")} do
-        buffer_info "BufferInfo"
-        message "Message"
+        %w[BufferId MsgId NetworkId IdentityId].each do |name|
+          uint32 name
+        end
+        %w[BufferInfo Message ].each do |name|
+          send CaseConverter.to_underscore_case(name), name
+        end
       end
 
       def get
