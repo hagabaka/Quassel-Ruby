@@ -1,5 +1,6 @@
 
 require 'Qt'
+require 'quassel/serialization'
 
 module Quassel
   class << self
@@ -26,9 +27,15 @@ module Quassel
     def ruby_value(object)
       case object
       when Qt::Variant
-        if %w[BufferInfo NetworkId Identity Message].include? object.type_name
-          # FIXME extract information from the object by unserializing manually
-          object
+        type_name = object.type_name
+        if %w[BufferInfo Message Identity
+              NetworkId BufferId MsgId IdentityId Network::Server].include? type_name
+          if Serialization.const_defined? type_name
+            data = qt_serialize(object).data
+            Serialization::Variant.read data
+          else
+            object
+          end
         else
           ruby_value(object.value)
         end

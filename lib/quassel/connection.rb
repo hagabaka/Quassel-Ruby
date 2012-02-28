@@ -40,7 +40,6 @@ module Quassel
             variant = Qt::Variant.new
             reader = Qt::DataStream.new(Qt::ByteArray.new(data))
             reader >> variant
-            Quassel.qt_debug variant
 
             message = Quassel.ruby_value(variant)
 
