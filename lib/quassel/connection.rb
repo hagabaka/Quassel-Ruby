@@ -37,10 +37,7 @@ module Quassel
         if @expected_length
           # received the length, get the message
           receive_data(@expected_length) do |data|
-            variant = Qt::Variant.new
-            reader = Qt::DataStream.new(Qt::ByteArray.new(data))
-            reader >> variant
-
+            variant = Quassel.unserialize_variant(data)
             message = Quassel.ruby_value(variant)
 
             @expected_length = nil

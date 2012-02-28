@@ -12,6 +12,14 @@ module Quassel
       block
     end
 
+    # extract a Qt::Variant from string using Qt::DataStream
+    def unserialize_variant(string)
+      variant = Qt::Variant.new
+      reader = Qt::DataStream.new(Qt::ByteArray.new(string))
+      reader >> variant
+      variant
+    end
+
     # print Qt object using QDebug. p() for Qt objects
     def qt_debug(object)
       buffer = Qt::Buffer.new
