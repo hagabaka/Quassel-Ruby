@@ -1,0 +1,51 @@
+= Information for Developers
+
+This project is written based on mostly experimentation, and its
+approaches might be confusing and could probably be improved. Here is
+some information for interested developers.
+
+== Quassel Protocol
+
+Here is an incomplete description of Quassel's client-core
+protocol, based on reading Quassel[http://quassel-irc.org] and
+QuasselDroid[http://quasseldroid.iskrembilen.com/]'s source code.
+
+Quassel core and client communicate with each other by sending serialized
+QVariantMaps and QVariantLists through a socket. Each object is preceded
+by a 32 bit integer indicating the length of the serialized object.
+
+The first two messages sent by each side are QVariantMaps, each of which
+containg a MsgType key and other data. In a successful scenario, Client
+sends a message with MsgType ClientInit, core responds with ClientInitAck,
+then client sends ClientLogin, and core responds with ClientLoginAck.
+
+Then the core starts to send QVariantLists called PackedFuncs,
+representing various IRC events and messages. The first element of these
+lists is an enum value indicating its type, and the second a function
+signature, and the rest are arguments for the function.
+
+== Serializtion Implementation
+
+Where possible, Quassel-Ruby uses QtRuby to unserialize and serialize
+messages, Which converts a QList to Array, QMap to Hash, etc.
+
+In order to unserialize objects of types defined by Quassel, it uses a
+C extension compiled from several Quassel source files to define and
+register the types.  However, unserializing the objects only result in
+Qt::Variants, and attempting to convert Quassel objects to Ruby values
+cause QtRuby to segfault. So instead it extracts data from the these
+objects manually, by first serializing them back using QtRuby, and then
+unserializing them using the BinData library. These objects are returned
+as Quassel::Serialization::<Type> objects, and their data can be accessed
+like with structs.
+
+== Project Files
+
++bin/quassel-ruby+:: main program
++lib/quassel/connection+:: connection to Quassel core
++lib/quassel/client+:: handling of core messages
++lib/quassel/helpers+:: helper methods
++lib/quassel/serialization+:: manual serialization of Qt/Quassel objects
++ext/quassel_types.cpp+:: C++ extension which registers Quassel types
++quassel/+:: submodule containing Quassel C++ code
+

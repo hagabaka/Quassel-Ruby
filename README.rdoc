@@ -1,0 +1,27 @@
+= Quassel-Ruby - Quassel Client in Ruby
+
+This is a work-in-progress Ruby client for the distributed IRC client
+Quassel[http://quassl-irc.org].
+
+== Features
+
+Currently, Quassel-Ruby is able to connect to the core, login with
+given credentials, and display messages sent from core in the console.
+
+The goal of the project is to provide a scripting interface, allowing
+Ruby scripts to send and respond to IRC messages and events.
+
+== Usage
+
+  quassel-client <username> <password>
+
++<username>+ and +<password>+ are Quassel core login credentials.
+
+== Requirements
+
+- ruby 1.9
+- running Quassel core
+- qtruby
+- bindata
+- matchmaker
+
