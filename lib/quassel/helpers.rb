@@ -56,5 +56,12 @@ module Quassel
         object
       end
     end
+
+    # return a hash whose keys are results of calling block on keys of given hash
+    def map_keys(hash, &block)
+      hash.inject({}) do |result, (key, value)|
+        result.merge({yield(key) => value})
+      end
+    end
   end
 end

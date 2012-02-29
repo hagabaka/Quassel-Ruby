@@ -15,10 +15,7 @@ module Quassel
 
     # send a QVariant map message to core, symbol keys are converted to strings
     def transmit(message)
-      map = message.inject({}) do |result, (key, value)|
-        result.merge({key.to_s => value})
-      end
-
+      map = Quassel.map_keys(message, &:to_s)
       block = Quassel.qt_serialize(Qt::Variant.new(map))
       length = Quassel.qt_serialize(block.length)
       @socket.write length
