@@ -1,5 +1,6 @@
 require 'bindata'
 require 'caseconverter'
+require 'Qt'
 
 module Quassel
   module Serialization
@@ -10,6 +11,31 @@ module Quassel
 
       def get
         content
+      end
+    end
+
+    class Utf16String < BinData::String
+      def snapshot
+        super.force_encoding 'UTF-16BE'
+      end
+    end
+
+    class QtString < BinData::Primitive
+      endian :big
+      uint32 :len
+      utf16_string :content, read_length: :len
+
+      def get
+        content.encode 'UTF-8'
+      end
+    end
+
+    class QtStringList < BinData::Primitive
+      endian :big
+      uint32 :len
+      array :list, initial_length: :len, type: :qt_string
+      def get
+        list
       end
     end
 
@@ -80,15 +106,53 @@ module Quassel
 
     class Variant < BinData::Primitive
       endian :big
-      skip length: 5
+    end
+
+    # This is serialized as a QMap<QString, QVariant>
+    class Identity < BinData::Primitive
+      endian :big
+      uint32 :len
+      array :pairs, initial_length: :len do
+        qt_string :name
+        variant :object
+      end
+      def get
+        result = {}
+        pairs.each do |pair|
+          result[pair.name] = pair.object
+        end
+        result
+      end
+    end
+
+    class UserType < BinData::Primitive
+      endian :big
       byte_array :type_name
       choice :object, selection: proc {type_name.chomp("\x00")} do
         %w[BufferId MsgId NetworkId IdentityId].each do |name|
           uint32 name
         end
-        %w[BufferInfo Message ].each do |name|
+        %w[BufferInfo Message Identity].each do |name|
           send CaseConverter.to_underscore_case(name), name
         end
+      end
+
+      def get
+        object
+      end
+    end
+
+    class Variant < BinData::Primitive
+      endian :big
+      uint32 :type
+      uint8 :flags
+
+      choice :object, selection: :type do
+        uint32 Qt::Variant::Int.to_i
+        uint8 Qt::Variant::Bool.to_i
+        qt_string Qt::Variant::String.to_i
+        qt_string_list Qt::Variant::StringList.to_i
+        user_type Qt::Variant::UserType.to_i
       end
 
       def get
