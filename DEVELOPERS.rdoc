@@ -41,11 +41,11 @@ like with structs.
 
 == Project Files
 
-+bin/quassel-ruby+:: main program
-+lib/quassel/connection+:: connection to Quassel core
-+lib/quassel/client+:: handling of core messages
-+lib/quassel/helpers+:: helper methods
-+lib/quassel/serialization+:: manual serialization of Qt/Quassel objects
-+ext/quassel_types.cpp+:: C++ extension which registers Quassel types
-+quassel/+:: submodule containing Quassel C++ code
+bin/quassel-ruby :: main program
+lib/quassel/connection.rb :: connection to Quassel core
+lib/quassel/client.rb :: handling of core messages
+lib/quassel/helpers.rb :: helper methods
+lib/quassel/serialization.rb :: manual serialization of Qt/Quassel objects
+ext/quassel_types.cpp.rb :: C++ extension which registers Quassel types
+quassel/ :: submodule containing Quassel C++ code
 
