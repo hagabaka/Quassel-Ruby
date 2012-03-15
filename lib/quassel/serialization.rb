@@ -14,31 +14,6 @@ module Quassel
       end
     end
 
-    class Utf16String < BinData::String
-      def snapshot
-        super.force_encoding 'UTF-16BE'
-      end
-    end
-
-    class QtString < BinData::Primitive
-      endian :big
-      uint32 :len
-      utf16_string :content, read_length: :len
-
-      def get
-        content.encode 'UTF-8'
-      end
-    end
-
-    class QtStringList < BinData::Primitive
-      endian :big
-      uint32 :len
-      array :list, initial_length: :len, type: :qt_string
-      def get
-        list
-      end
-    end
-
     class BufferInfo < BinData::Record
       class Type < BinData::Primitive
         endian :big
@@ -104,24 +79,17 @@ module Quassel
       byte_array :content
     end
 
-    class Variant < BinData::Primitive
-      endian :big
-    end
-
     # This is serialized as a QMap<QString, QVariant>
     class Identity < BinData::Primitive
-      endian :big
-      uint32 :len
-      array :pairs, initial_length: :len do
-        qt_string :name
-        variant :object
-      end
+      rest :serialized_map
       def get
-        result = {}
-        pairs.each do |pair|
-          result[pair.name] = pair.object
-        end
-        result
+        # If we try to unserialize the QMap directly, like
+        #   h = {}
+        #   Qt::DataStream.new(serialized_map) >> h
+        # we get segfault. So instead we prepend some type information to produced a
+        # serialized QVariant<QVariantMap>, and unserialize it and then get its value
+        serialized_variant = [Qt::Variant::Map.to_i, 0].pack('L>C') + serialized_map 
+        Quassel.ruby_value Quassel.unserialize_variant(serialized_variant)
       end
     end
 
@@ -148,10 +116,6 @@ module Quassel
       uint8 :flags
 
       choice :object, selection: :type do
-        uint32 Qt::Variant::Int.to_i
-        uint8 Qt::Variant::Bool.to_i
-        qt_string Qt::Variant::String.to_i
-        qt_string_list Qt::Variant::StringList.to_i
         user_type Qt::Variant::UserType.to_i
       end
 
