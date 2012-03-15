@@ -36,8 +36,7 @@ module Quassel
         if @expected_length
           # received the length, get the message
           receive_data(@expected_length) do |data|
-            variant = Quassel.unserialize_variant(data)
-            message = Quassel.ruby_value(variant)
+            message = Quassel.unserialize_variant(data)
             if message.is_a? Array
               message[0] = REQUEST_TYPES[message[0]]
             end

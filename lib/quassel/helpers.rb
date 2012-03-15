@@ -12,12 +12,12 @@ module Quassel
       block
     end
 
-    # extract a Qt::Variant from string using Qt::DataStream
+    # unserialize a QVariant from given string, and return its recursive value
     def unserialize_variant(string)
       variant = Qt::Variant.new
       reader = Qt::DataStream.new(Qt::ByteArray.new(string))
       reader >> variant
-      variant
+      ruby_value variant
     end
 
     # print Qt object using QDebug. p() for Qt objects

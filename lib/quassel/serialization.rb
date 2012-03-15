@@ -89,7 +89,7 @@ module Quassel
         # we get segfault. So instead we prepend some type information to produced a
         # serialized QVariant<QVariantMap>, and unserialize it and then get its value
         serialized_variant = [Qt::Variant::Map.to_i, 0].pack('L>C') + serialized_map 
-        Quassel.ruby_value Quassel.unserialize_variant(serialized_variant)
+        Quassel.unserialize_variant(serialized_variant)
       end
     end
 
