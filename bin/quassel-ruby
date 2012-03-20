@@ -2,7 +2,7 @@
 
 require 'optparse'
 
-options = {}
+options = {scripts: []}
 opts = OptionParser.new do |opts|
   opts.on("-H HOST","specify alternate host") {|o|
     options[:host] = o
@@ -10,6 +10,9 @@ opts = OptionParser.new do |opts|
   opts.on("-p PORT","specify alternate port") {|o|
     options[:port] = o
   }
+  opts.on("-s SCRIPT", "require script after initializing client, can be used multiple times") {|o|
+    options[:scripts] << o
+  } 
 end.parse!
 
 abort 'quassel-ruby [options] <username> <password>' unless ARGV.length >= 2
@@ -19,7 +22,9 @@ require 'quassel/client'
 
 Qt::Application.new(ARGV) do
   username, password = ARGV[0..1]
-  Quassel::Client.new(username, password, options[:host], options[:port])
+  Quassel::Client::INSTANCE =
+    Quassel::Client.new(username, password, options[:host], options[:port])
+  options[:scripts].each {|script| require script}
   exec
 end
 
