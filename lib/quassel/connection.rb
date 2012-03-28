@@ -10,16 +10,18 @@ module Quassel
   HEART_BEAT = 5
   HEART_BEAT_REPLY = 6
 
-  # Connection to Quassel core
+  # Connection to a Quassel core, or in the proxy script, client
   class Connection
     include Eventful 
 
     DEFAULT_HOST = '127.0.0.1'
     DEFAULT_PORT = 4242
-    def initialize(host = nil, port = nil)
+
+    def initialize(host = nil, port = nil, socket = nil)
       @host = host ? host : DEFAULT_HOST
       @port = port ? port : DEFAULT_PORT
-      @socket = Qt::TcpSocket.new
+      @socket = socket || Qt::TcpSocket.new
+
       @expected_length = nil
 
       @socket.connect SIGNAL(:connected) do
@@ -33,7 +35,7 @@ module Quassel
           receive_data(@expected_length) do |data|
             message = Quassel.unserialize_variant(data)
             @expected_length = nil
-            fire :message_received, message
+            fire :message_received, message, data
           end 
         else
           # need a length
@@ -44,16 +46,19 @@ module Quassel
       end
     end
 
-    # send a QVariant map message to core, symbol keys are converted to strings
+    # send a message to the peer
     def transmit(message)
-      map = Quassel.map_keys(message, &:to_s)
-      block = Quassel.qt_serialize(Qt::Variant.new(map))
+      transmit_serialized Quassel.qt_serialize(Qt::Variant.new(message))
+    end
+
+    # send an already serialized block of data to the peer
+    def transmit_serialized(block)
       length = Quassel.qt_serialize(block.length)
       @socket.write length
       @socket.write block
     end
 
-    # connect to core
+    # connect to the peer
     def connect
       @socket.connect_to_host(@host, @port)
     end
