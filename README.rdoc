@@ -25,4 +25,5 @@ Ruby scripts to send and respond to IRC messages and events.
 - bindata
 - case
 - eventful
+- caseconverter
 
