@@ -3,6 +3,13 @@ require 'quassel/helpers'
 require 'eventful'
 
 module Quassel
+  SYNC = 1
+  RPC_CALL = 2
+  INIT_REQUEST = 3
+  INIT_DATA = 4
+  HEART_BEAT = 5
+  HEART_BEAT_REPLY = 6
+
   # Connection to Quassel core
   class Connection
     include Eventful 
@@ -25,9 +32,6 @@ module Quassel
           # received the length, get the message
           receive_data(@expected_length) do |data|
             message = Quassel.unserialize_variant(data)
-            if message.is_a? Array
-              message[0] = REQUEST_TYPES[message[0]]
-            end
             @expected_length = nil
             fire :message_received, message
           end 
@@ -48,9 +52,6 @@ module Quassel
       @socket.write length
       @socket.write block
     end
-
-    REQUEST_TYPES = [nil, :sync, :rpc_call, :init_request, :init_data, :heart_beat,
-                     :heart_beat_reply]
 
     # connect to core
     def connect

@@ -24,7 +24,7 @@ module Quassel
 
       connection.on :message_received do |c, message|
         Case message do
-          of [:rpc_call, '2displayMsg(Message)', _]  do
+          of [Quassel::RPC_CALL, '2displayMsg(Message)', _]  do
             puts Quassel::Client.format_message('%{timestamp} %{buffer.name} %{sender} %{content}', message[2])
             require 'pry'
           end
