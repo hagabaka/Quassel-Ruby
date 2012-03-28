@@ -7,7 +7,7 @@ module Quassel
     def initialize(username, password, host = nil, port = nil)
       connection = Connection.new(host, port)
 
-      connection.when_connected do
+      connection.on :connected do
         connection.transmit \
           MsgType: 'ClientInit',
           ClientDate: Time.now.strftime('%^b %d %Y %H:%M:%S'),
@@ -22,7 +22,7 @@ module Quassel
           Password: password
       end
 
-      connection.when_message_received do |message|
+      connection.on :message_received do |c, message|
         Case message do
           of [:rpc_call, '2displayMsg(Message)', _]  do
             puts Quassel::Client.format_message('%{timestamp} %{buffer.name} %{sender} %{content}', message[2])

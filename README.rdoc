@@ -24,4 +24,5 @@ Ruby scripts to send and respond to IRC messages and events.
 - qtruby
 - bindata
 - matchmaker
+- eventful
 
