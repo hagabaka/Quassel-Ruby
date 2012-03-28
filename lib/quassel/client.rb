@@ -1,9 +1,11 @@
 require 'quassel/connection'
-require 'matchmaker'
 require 'helpers'
+require 'eventful'
 
 module Quassel
   class Client
+    include Eventful
+
     def initialize(username, password, host = nil, port = nil)
       connection = Connection.new(host, port)
 
@@ -22,29 +24,11 @@ module Quassel
           Password: password
       end
 
-      connection.on :message_received do |c, message|
-        Case message do
-          of [Quassel::RPC_CALL, '2displayMsg(Message)', _]  do
-            puts Quassel::Client.format_message('%{timestamp} %{buffer.name} %{sender} %{content}', message[2])
-            require 'pry'
-          end
-          of _ do
-           p message
-          end
-        end
+      connection.on :message_received do |_, message|
+        fire :message_received, message
       end
 
       connection.connect
-    end
-
-    def self.format_message(format, message)
-      hash = {}
-      format.scan(/%\{([^}]+)}/) do |(key)|
-        hash[key.to_sym] = key.split('.').inject(message) do |result, part|
-          result.send part
-        end
-      end
-      format % hash
     end
   end
 end

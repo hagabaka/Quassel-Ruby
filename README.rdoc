@@ -23,6 +23,6 @@ Ruby scripts to send and respond to IRC messages and events.
 - running Quassel core
 - qtruby
 - bindata
-- matchmaker
+- case
 - eventful
 
