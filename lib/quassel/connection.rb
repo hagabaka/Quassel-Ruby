@@ -69,9 +69,7 @@ module Quassel
     # and yield the data to block when received
     def receive_data(length, &block)
       if @socket.bytes_available >= length
-        data = "\0" * length
-        @socket.read_data(data, length)
-        yield data
+        yield @socket.read(length).to_s
       end
     end
   end
