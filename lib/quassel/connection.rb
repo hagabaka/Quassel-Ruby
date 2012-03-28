@@ -29,18 +29,20 @@ module Quassel
       end
 
       @socket.connect SIGNAL(:readyRead) do
-        # each message is a QVariant map or list, and prefixed by its length as uint32
-        if @expected_length
-          # received the length, get the message
-          receive_data(@expected_length) do |data|
-            message = Quassel.unserialize_variant(data)
-            @expected_length = nil
-            fire :message_received, message, data
-          end 
-        else
-          # need a length
-          receive_data(4) do |data|
-            @expected_length = data.unpack('L>').first
+        until @socket.bytes_available < (@expected_length || 4)
+          # each message is a QVariant map or list, and prefixed by its length as uint32
+          if @expected_length
+            # received the length, get the message
+            receive_data(@expected_length) do |data|
+              message = Quassel.unserialize_variant(data)
+              @expected_length = nil
+              fire :message_received, message, data
+            end 
+          else
+            # need a length
+            receive_data(4) do |data|
+              @expected_length = data.unpack('L>').first
+            end
           end
         end
       end

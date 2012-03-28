@@ -1,30 +1,22 @@
 #! /usr/bin/env ruby
 
-require 'optparse'
-
-options = {scripts: []}
-opts = OptionParser.new do |opts|
-  opts.on("-H HOST","specify alternate host") {|o|
-    options[:host] = o
-  }
-  opts.on("-p PORT","specify alternate port") {|o|
-    options[:port] = o
-  }
-  opts.on("-s SCRIPT", "require script after initializing client, can be used multiple times") {|o|
-    options[:scripts] << o
-  } 
-end.parse!
-
-abort 'quassel-ruby [options] <username> <password>' unless ARGV.length >= 2
-
+require 'trollop'
 require 'Qt'
-require 'quassel/client'
 
-Qt::Application.new(ARGV) do
-  username, password = ARGV[0..1]
-  Quassel::Client::INSTANCE =
-    Quassel::Client.new(username, password, options[:host], options[:port])
-  options[:scripts].each {|script| require script}
-  exec
+module Quassel
+  CONFIG = Trollop.options do
+    opt :host, 'core host name', type: :string, short: 'H'
+    opt :port, 'core port number', type: :int, short: 'P'
+    opt :username, 'core account username', type: :string
+    opt :password, 'core account password', type: :string
+    opt :script, 'script to require', type: :strings
+  end
+
+  ::Qt::Application.new(ARGV) do
+    CONFIG[:script].each {|script| require script}
+    exec
+  end
 end
+
+
 
