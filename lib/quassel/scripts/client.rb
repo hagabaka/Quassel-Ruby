@@ -1,6 +1,6 @@
 require 'quassel/connection'
 
-Quassel::CLIENT = Quassel::Connection.new.tap do |client|
+Quassel::CORE = Quassel::Connection.new.tap do |client|
   client.on(:connected) do
     transmit_map \
       MsgType: 'ClientInit',
@@ -21,6 +21,6 @@ end
 
 # send a hash message as QMap with symbol keys converted to strings
 def transmit_map(message)
-  Quassel::CLIENT.transmit Quassel.map_keys(message, &:to_s)
+  Quassel::CORE.transmit Quassel.map_keys(message, &:to_s)
 end
 
