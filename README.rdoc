@@ -16,7 +16,7 @@ Ruby scripts to send and respond to IRC messages and events.
 To connect to a running core using specified credentials, and print
 IRC messages:
 
-  quassel-client -s lib/quassel/log -u username -p password
+  quassel-client -s lib/quassel/logger -u username -p password
 
 To show full usage:
 
