@@ -37,6 +37,8 @@ module Quassel
           if @expected_length
             # received the length, get the message
             receive_data(@expected_length) do |data|
+              raw_data = data
+
               # compressed messages are prefixed with their size as 4 byte integers
               if @use_compression
                 data = Quassel.qt_uncompress data[4..-1]
@@ -52,7 +54,7 @@ module Quassel
               end
 
               @expected_length = nil
-              fire :message_received, message, data
+              fire :message_received, message, raw_data
             end 
           else
             # need a length
