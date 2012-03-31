@@ -57,7 +57,7 @@ module Quassel
     def transmit_serialized(block)
       length = Quassel.qt_serialize(block.length)
       @socket.write length
-      @socket.write block
+      @socket.write Qt::ByteArray.new(block)
     end
 
     # connect to the peer
