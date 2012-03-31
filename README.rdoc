@@ -18,6 +18,11 @@ IRC messages:
 
   quassel-client -s lib/quassel/logger -u username -p password
 
+To act as a proxy between a running core and other Quassel clients,
+printing messages sent between them:
+
+  quassel-client -s lib/quassel/proxy
+
 To show full usage:
 
   quassel-client -h
