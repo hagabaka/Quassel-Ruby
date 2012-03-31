@@ -110,6 +110,22 @@ module Quassel
       end
     end
 
+    class UnsignedShort < BinData::Primitive
+      endian :big
+      uint16 :number
+      def get
+        number
+      end
+    end
+
+    class QtChar < BinData::Primitive
+      endian :big
+      int8 :number
+      def get
+        number
+      end
+    end
+
     class Variant < BinData::Primitive
       endian :big
       uint32 :type
@@ -117,6 +133,8 @@ module Quassel
 
       choice :object, selection: :type do
         user_type Qt::Variant::UserType.to_i
+        unsigned_short 'ushort'
+        qt_char 'QChar'
       end
 
       def get

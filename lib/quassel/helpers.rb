@@ -36,8 +36,10 @@ module Quassel
       case object
       when Qt::Variant
         type_name = object.type_name
+
         if %w[BufferInfo Message Identity Network::Server
-              NetworkId BufferId MsgId IdentityId].include? type_name
+              NetworkId BufferId MsgId IdentityId
+              ushort QChar].include? type_name
           begin
             Serialization::Variant.read qt_serialize(object).data
           rescue IndexError
