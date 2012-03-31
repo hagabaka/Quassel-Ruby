@@ -15,6 +15,27 @@ extern "C" {
   void Init_QuasselTypes();
 }
 
+VALUE qt_compress(VALUE self, VALUE data)
+{
+  Check_Type(data, T_STRING);
+  QByteArray byte_array = qCompress((const uchar*)RSTRING_PTR(data), RSTRING_LEN(data));
+  size_t size = byte_array.size();
+  char* result = (char*)calloc(size, sizeof(char));
+  memcpy(result, byte_array.data(), size);
+  return rb_str_new(result, size); 
+}
+
+VALUE qt_uncompress(VALUE self, VALUE data)
+{
+  Check_Type(data, T_STRING);
+
+  QByteArray byte_array = qUncompress((const uchar*)RSTRING_PTR(data), RSTRING_LEN(data));
+  size_t size = byte_array.size();
+  char* result = (char*)calloc(size, sizeof(char));
+  memcpy(result, byte_array.data(), size);
+  return rb_str_new(result, size); 
+}
+
 void Init_QuasselTypes() {
   // Copied from quassel.cpp Quassel::registerMetaTypes();
   // FIXME if the function is made static in Quassel source, we can just call it
@@ -55,5 +76,8 @@ void Init_QuasselTypes() {
     qRegisterMetaType<QVariant>("QVariant");
     qRegisterMetaTypeStreamOperators<QVariant>("QVariant");
   }
+
+  rb_define_singleton_method(rb_define_module("Quassel"), "qt_compress", (VALUE (*)(...))qt_compress, 1);
+  rb_define_singleton_method(rb_define_module("Quassel"), "qt_uncompress", (VALUE (*)(...))qt_uncompress, 1);
 }
 

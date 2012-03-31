@@ -17,11 +17,14 @@ module Quassel
     DEFAULT_HOST = '127.0.0.1'
     DEFAULT_PORT = 4242
 
+    attr_accessor :use_compression
+
     def initialize(host = nil, port = nil, socket = nil)
       @host = host ? host : DEFAULT_HOST
       @port = port ? port : DEFAULT_PORT
       @socket = socket || Qt::TcpSocket.new
-
+      @use_compression = false
+      
       @expected_length = nil
 
       @socket.connect SIGNAL(:connected) do
@@ -34,7 +37,20 @@ module Quassel
           if @expected_length
             # received the length, get the message
             receive_data(@expected_length) do |data|
+              # compressed messages are prefixed with their size as 4 byte integers
+              if @use_compression
+                data = Quassel.qt_uncompress data[4..-1]
+              end
+
               message = Quassel.unserialize_variant(data)
+
+              # if we fail to unserialize the message, and compression is not yet
+              # enabled, assume the cause of failure is compression, and try again
+              if !message && !@use_compression
+                @use_compression = true
+                redo
+              end
+
               @expected_length = nil
               fire :message_received, message, data
             end 
@@ -49,6 +65,7 @@ module Quassel
     end
 
     # send a message to the peer
+    # FIXME need to honor @use_compress
     def transmit(message)
       transmit_serialized Quassel.qt_serialize(Qt::Variant.new(message))
     end
