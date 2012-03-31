@@ -16,12 +16,12 @@ Ruby scripts to send and respond to IRC messages and events.
 To connect to a running core using specified credentials, and print
 IRC messages:
 
-  quassel-client -s lib/quassel/logger -u username -p password
+  quassel-client -s quassel/scripts/logger -u username -p password
 
 To act as a proxy between a running core and other Quassel clients,
 printing messages sent between them:
 
-  quassel-client -s lib/quassel/proxy
+  quassel-client -s quassel/scripts/proxy
 
 To show full usage:
 
